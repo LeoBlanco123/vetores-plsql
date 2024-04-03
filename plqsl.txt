@@ -1,0 +1,94 @@
+set serveroutput on;
+ 
+drop table funcionario cascade constraints;
+ 
+create table funcionario(
+cd_fun number(3),
+nm_fun varchar(20),
+salario number(6),
+dt_adm date
+)
+
+select * from funcionario;
+
+BEGIN
+    insert into funcionario(cd_fun, nm_fun, salario,dt_adm) values (1,'Marcel', 10000, '17/april/2000');
+    insert into funcionario(cd_fun, nm_fun, salario,dt_adm) values (2,'Claudia', 16000, '10/october/1998');
+    insert into funcionario(cd_fun, nm_fun, salario,dt_adm) values (3,'Joaquim', 5500, '17/july/2010');
+    insert into funcionario(cd_fun, nm_fun, salario,dt_adm) values (4,'Valéria', 7300, '08/june/2015');
+    COMMIT;
+END;
+ 
+-- Ex1
+
+DECLARE
+    cursor c_exibe is select nm_fun, salario from funcionario;
+    v_exibe c_exibe%rowtype;
+BEGIN
+    open c_exibe;
+    loop
+        fetch c_exibe into v_exibe;
+    exit when c_exibe%notfound;
+        dbms_output.put_line('Nome: ' || v_exibe.nm_fun);
+        dbms_output.put_line('Salario: ' || v_exibe.salario);
+        dbms_output.put_line('');
+    end loop;
+    close c_exibe;
+END;
+
+-- Ex2
+
+DECLARE
+    cursor c_exibe is select nm_fun, salario from funcionario;
+BEGIN
+    for v_exibe in c_exibe LOOP
+        dbms_output.put_line('Nome: ' || v_exibe.nm_fun);
+        dbms_output.put_line('Salario: ' || v_exibe.salario);
+        dbms_output.put_line('');
+    end loop;
+END;
+
+-- Ex3
+
+alter table funcionario add tempo number(10);
+
+DECLARE
+    cursor c_exibe is select * from funcionario;
+BEGIN
+    for v_exibe in c_exibe LOOP
+        update funcionario set tempo = sysdate - v_exibe.dt_adm where cd_fun = v_exibe.cd_fun;
+    end loop;
+END;
+
+-- Ex4
+
+DECLARE 
+    cursor c_exibe is select * from funcionario;
+    v_meses number(3);
+BEGIN
+    for v_exibe in c_exibe LOOP
+    v_meses := v_exibe.tempo / 30;
+        if v_meses >= 150 then
+            update funcionario set salario = salario + salario * 0.10 where cd_fun = v_exibe.cd_fun;
+        else
+            update funcionario set salario = salario + salario * 0.10 where cd_fun = v_exibe.cd_fun;
+        end if;
+    end loop;
+END;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
